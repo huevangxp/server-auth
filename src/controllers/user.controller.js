@@ -41,7 +41,8 @@ exports.login = async (req, res) => {
     try {
       const { email, password } = req.body;
       // console.log(email, password);
-        const user = await User.findOne({ where: { email: email } })
+      const user = await User.findOne({ where: { email: email } })
+      console.log(user);
         if (!user) {
             return res.status(404).json({message: 'Not Found'});
       }
@@ -61,6 +62,27 @@ exports.viewUser = async (req, res) => {
   try {
     const user = await User.findAll();
     res.status(200).json({ user: user})
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log(email);
+    const user = await User.findOne({ where: { email: email } })
+    // console.log(user);
+    if (!user) {
+      return res.status(404).json({ message:"this user not found"})
+    }
+    await User.update({
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+      password: password
+    }, { where: { email:user.email } })
+    res.status(200).json({ message:'success' })
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
